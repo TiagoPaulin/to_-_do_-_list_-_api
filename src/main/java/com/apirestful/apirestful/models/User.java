@@ -1,5 +1,6 @@
 package com.apirestful.apirestful.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
@@ -53,6 +54,7 @@ public class User {
     public String getPassword() {
         return password;
     }
+    @JsonIgnore // pra nao retornar todas as tasks do usuário quaqndo procurar por ele
     public List<Task> getTasks() {
         return tasks;
     }
