@@ -15,8 +15,6 @@ public class UserService {
     // definindo comunicação com oo repositories
     @Autowired //notação para instanciar esses atributos
     private UserRepository ur;
-    @Autowired //notação para instanciar esses atributos
-    private TaskRepository tr;
 
     // metodo para encontrar o usuário pelo id
     public User findById(Long id){
@@ -34,7 +32,6 @@ public class UserService {
         user.setId(null); // garante que o id seja gerado no medel, caso o usuári consiga de alguma forma criar o user com id
 
         user = ur.save(user);
-        tr.saveAll(user.getTasks());
 
         return user;
 
@@ -65,7 +62,7 @@ public class UserService {
             throw new RuntimeException("Não é possível excluir pois há entidades relacionadas");
 
         }
-        
+
     }
 
 }
