@@ -37,6 +37,7 @@ public class User {
     @NotEmpty(groups = {CreateUser.class, UpdateUser.class})  // nao permite string vazia (" ") ao criar o usuario e alterar a senha
     @Size(groups = {CreateUser.class, UpdateUser.class}, min = 8, max = 60) // tamanho minimo e maximo que a senha deve ter ao criar o usuario e alterar a senha
     private String password;
+    @OneToMany(mappedBy = "user") // definindo cardinalidade, um usuário pode ter várias tasks
     private List<Task> tasks = new ArrayList<>();
 
     // construtor
