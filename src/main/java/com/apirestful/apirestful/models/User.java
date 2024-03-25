@@ -44,7 +44,7 @@ public class User {
     public User(){}
 
     // metodos get
-    public long getId() {
+    public Long getId() {
         return id;
     }
     public String getUsername() {
@@ -58,7 +58,7 @@ public class User {
     }
 
     // metodos set
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public void setUsername(String username) {
