@@ -6,7 +6,9 @@ import com.apirestful.apirestful.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.stylesheets.LinkStyle;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service    // definindo como camda de serviço
@@ -26,6 +28,15 @@ public class TaskService {
         Optional<Task> task = tr.findById(id);
 
         return task.orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
+
+    }
+
+    // metodo para retornar todas as tasks de um usuário
+    public List<Task> findAllByUserId (Long userId) {
+
+        List<Task> tasks = this.tr.findByUser_Id(userId);
+
+        return tasks;
 
     }
 
