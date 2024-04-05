@@ -3,6 +3,7 @@ package com.apirestful.apirestful.controllers;
 import com.apirestful.apirestful.models.Task;
 import com.apirestful.apirestful.models.User;
 import com.apirestful.apirestful.services.TaskService;
+import com.apirestful.apirestful.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,8 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/{id}")
     public ResponseEntity<Task> findById(@PathVariable Long id) {
@@ -32,6 +35,8 @@ public class TaskController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Task>> findAllByUserId (@PathVariable Long userId) {
+
+        userService.findById(userId);
 
         List<Task> tasks = taskService.findAllByUserId(userId);
 
