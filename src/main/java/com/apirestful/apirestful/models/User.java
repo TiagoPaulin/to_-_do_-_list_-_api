@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,11 @@ import java.util.Objects;
 // criando a classe do usuario
 @Entity // definindo como entidade no banco de dados
 @Table(name = "table_user") // definindo nome da tbabela no banco
+@AllArgsConstructor // implementando o construtor com os atributos com lombok
+@NoArgsConstructor // implementando o construtor vazio com lombok
+@Getter // metods getter com lombok
+@Setter // metodos setters com lombok
+@EqualsAndHashCode // metodos equals e hascode com lombok
 public class User {
 
     // definindo interfaces
@@ -39,66 +45,69 @@ public class User {
     @Size(groups = {CreateUser.class, UpdateUser.class}, min = 8, max = 60) // tamanho minimo e maximo que a senha deve ter ao criar o usuario e alterar a senha
     private String password;
     @OneToMany(mappedBy = "user") // definindo cardinalidade, um usuário pode ter várias tasks
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // quando retornar o json na api não vai retornar as tasks do usuário para o front
     private List<Task> tasks = new ArrayList<>();
 
-    // construtor
-    public User(){}
+    // implementação do construtor e getters e setters da maneira convencional
 
-    // metodos get
-    public Long getId() {
-        return id;
-    }
-    public String getUsername() {
-        return username;
-    }
-    public String getPassword() {
-        return password;
-    }
-    @JsonIgnore // pra nao retornar todas as tasks do usuário quaqndo procurar por ele
-    public List<Task> getTasks() {
-        return tasks;
-    }
-
-    // metodos set
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
-    }
-
-    // hascode e equals
-    @Override
-    public boolean equals(Object object) {
-
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-
-        User other = (User) object;
-
-        if (this.id == null)
-            if (other.id != null)
-                return false;
-            else if (!this.id.equals(other.id))
-                return false;
-
-        return Objects.equals(this.id, other.id) && Objects.equals(this.username, other.username)
-                && Objects.equals(this.password, other.password);
-
-    }
-    @Override
-    public int hashCode() {
-
-        final int prime = 31;
-        int result =1;
-        result = prime * result + (this.id == null ? 0 : this.id.hashCode());
-
-        return result;
-    }
+//    // construtor
+//    public User(){}
+//
+//    // metodos get
+//    public Long getId() {
+//        return id;
+//    }
+//    public String getUsername() {
+//        return username;
+//    }
+//    public String getPassword() {
+//        return password;
+//    }
+//    @JsonIgnore // pra nao retornar todas as tasks do usuário quaqndo procurar por ele
+//    public List<Task> getTasks() {
+//        return tasks;
+//    }
+//
+//    // metodos set
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
+//    public void setUsername(String username) {
+//        this.username = username;
+//    }
+//    public void setPassword(String password) {
+//        this.password = password;
+//    }
+//    public void setTasks(List<Task> tasks) {
+//        this.tasks = tasks;
+//    }
+//
+//    // hascode e equals
+//    @Override
+//    public boolean equals(Object object) {
+//
+//        if (this == object) return true;
+//        if (object == null || getClass() != object.getClass()) return false;
+//
+//        User other = (User) object;
+//
+//        if (this.id == null)
+//            if (other.id != null)
+//                return false;
+//            else if (!this.id.equals(other.id))
+//                return false;
+//
+//        return Objects.equals(this.id, other.id) && Objects.equals(this.username, other.username)
+//                && Objects.equals(this.password, other.password);
+//
+//    }
+//    @Override
+//    public int hashCode() {
+//
+//        final int prime = 31;
+//        int result =1;
+//        result = prime * result + (this.id == null ? 0 : this.id.hashCode());
+//
+//        return result;
+//    }
 }
