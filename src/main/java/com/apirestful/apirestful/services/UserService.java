@@ -3,6 +3,8 @@ package com.apirestful.apirestful.services;
 import com.apirestful.apirestful.models.User;
 import com.apirestful.apirestful.repositories.TaskRepository;
 import com.apirestful.apirestful.repositories.UserRepository;
+import com.apirestful.apirestful.services.exceptions.DataBindingViolationException;
+import com.apirestful.apirestful.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +23,7 @@ public class UserService {
 
         Optional<User> user = ur.findById(id);
 
-        return user.orElseThrow(() -> new RuntimeException("Usuário não encontrado")); // se o optional conter um eser retorna o user, se nao lança uma exceção
+        return user.orElseThrow(() -> new ObjectNotFoundException("Usuário não encontrado")); // se o optional conter um eser retorna o user, se nao lança uma exceção
 
     }
 
@@ -59,7 +61,7 @@ public class UserService {
 
         } catch (Exception e){
 
-            throw new RuntimeException("Não é possível excluir pois há entidades relacionadas");
+            throw new DataBindingViolationException("Não é possível excluir pois há entidades relacionadas");
 
         }
 

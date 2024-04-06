@@ -3,6 +3,8 @@ package com.apirestful.apirestful.services;
 import com.apirestful.apirestful.models.Task;
 import com.apirestful.apirestful.models.User;
 import com.apirestful.apirestful.repositories.TaskRepository;
+import com.apirestful.apirestful.services.exceptions.DataBindingViolationException;
+import com.apirestful.apirestful.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +29,7 @@ public class TaskService {
 
         Optional<Task> task = tr.findById(id);
 
-        return task.orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
+        return task.orElseThrow(() -> new ObjectNotFoundException("Tarefa não encontrada"));
 
     }
 
@@ -76,7 +78,7 @@ public class TaskService {
 
         } catch (Exception e) {
 
-            throw new RuntimeException("Nao foi possivel deletar a task");
+            throw new DataBindingViolationException("Nao foi possivel deletar a task");
 
         }
 
