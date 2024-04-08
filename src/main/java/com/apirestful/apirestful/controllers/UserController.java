@@ -13,6 +13,7 @@ import java.net.URI;
 
 @RestController // definir como camada de controle
 @RequestMapping("/user") //  define o inicio da requisição de todos os métodos dessa classe
+@Validated
 public class UserController {
 
     @Autowired
