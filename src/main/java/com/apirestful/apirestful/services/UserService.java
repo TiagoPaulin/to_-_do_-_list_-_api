@@ -1,15 +1,19 @@
 package com.apirestful.apirestful.services;
 
 import com.apirestful.apirestful.models.User;
+import com.apirestful.apirestful.models.enums.ProfileEnum;
 import com.apirestful.apirestful.repositories.TaskRepository;
 import com.apirestful.apirestful.repositories.UserRepository;
 import com.apirestful.apirestful.services.exceptions.DataBindingViolationException;
 import com.apirestful.apirestful.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service // definindo como camada de serviço
 public class UserService {
@@ -17,6 +21,9 @@ public class UserService {
     // definindo comunicação com oo repositories
     @Autowired //notação para instanciar esses atributos
     private UserRepository ur;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // metodo para encontrar o usuário pelo id
     public User findById(Long id){
@@ -33,6 +40,12 @@ public class UserService {
 
         user.setId(null); // garante que o id seja gerado no medel, caso o usuári consiga de alguma forma criar o user com id
 
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword())); // criptografa a senha do usuario
+        user.setProfiles(
+                Stream.of(
+                        ProfileEnum.USER.getCode())
+                        .collect(Collectors.toSet()));
+
         user = ur.save(user);
 
         return user;
@@ -45,6 +58,9 @@ public class UserService {
 
         User newUser = findById(user.getId()); // verifica se o usuário existe
         newUser.setPassword(user.getPassword());
+
+        newUser.setPassword(bCryptPasswordEncoder.encode(user.getPassword())); // criptografa a senha dousuario
+
 
         return ur.save(newUser);
 

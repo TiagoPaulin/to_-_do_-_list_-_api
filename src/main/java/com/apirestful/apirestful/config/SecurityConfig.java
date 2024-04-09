@@ -16,11 +16,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
-@Configuration
-@EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+@Configuration // Indica que esta classe é uma configuração do Spring
+@EnableWebSecurity // Habilita a segurança web no aplicativo
+@EnableMethodSecurity(prePostEnabled = true) // Habilita a segurança de método com pré-autorização
 public class SecurityConfig {
 
+    // Definição de URLs públicas que não exigem autenticação
     private static final String[] PUBLIC_MATCHERS ={
             "/"
     };
@@ -29,41 +30,44 @@ public class SecurityConfig {
             "/login"
     };
 
+    // Configuração do filtro de segurança
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+        // Desabilita CSRF e CORS
         http.csrf(AbstractHttpConfigurer::disable)
-            .cors(AbstractHttpConfigurer::disable);
+                .cors(AbstractHttpConfigurer::disable);
 
+        // Configura as autorizações de acesso
         http.authorizeRequests()
-                .requestMatchers(HttpMethod.POST,PUBLIC_MATCHERS_POST).permitAll()
+                .requestMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
                 .requestMatchers(PUBLIC_MATCHERS).permitAll()
                 .anyRequest().authenticated();
 
+        // Configura o gerenciamento de sessão para STATELESS (sem estado)
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        return http.build();
-
+        return http.build(); // Retorna a cadeia de filtros de segurança configurada
     }
 
+    // Configuração do source de CORS
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
 
+        // Cria uma configuração CORS padrão permitindo todos os métodos
         CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
-
         configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
 
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // Aplica a configuração a todas as URLs
 
-        source.registerCorsConfiguration("/**", configuration);
-
-        return source;
-
+        return source; // Retorna o source de configuração CORS
     }
 
+    // Configuração de um codificador de senha BCrypt
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder () {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(); // Retorna um codificador de senha BCrypt
     }
 
 }

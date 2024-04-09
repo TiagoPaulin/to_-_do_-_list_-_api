@@ -1,5 +1,6 @@
 package com.apirestful.apirestful.models;
 
+import com.apirestful.apirestful.models.enums.ProfileEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -8,45 +9,62 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
-// criando a classe do usuario
-@Entity // definindo como entidade no banco de dados
-@Table(name = "table_user") // definindo nome da tbabela no banco
-@AllArgsConstructor // implementando o construtor com os atributos com lombok
-@NoArgsConstructor // implementando o construtor vazio com lombok
-@Getter // metods getter com lombok
-@Setter // metodos setters com lombok
-@EqualsAndHashCode // metodos equals e hascode com lombok
+// Criando a classe do usuário
+@Entity // Define a classe como uma entidade no banco de dados
+@Table(name = "table_user") // Define o nome da tabela no banco de dados
+@AllArgsConstructor // Implementa um construtor com todos os atributos com lombok
+@NoArgsConstructor // Implementa um construtor vazio com lombok
+@Getter // Gera automaticamente os métodos getters com lombok
+@Setter // Gera automaticamente os métodos setters com lombok
+@EqualsAndHashCode // Gera automaticamente os métodos equals e hashCode com lombok
 public class User {
 
-    // definindo interfaces
-    public interface CreateUser{}
-    public interface UpdateUser{}
+    // Definindo interfaces
+    public interface CreateUser{} // Interface para criar um usuário
+    public interface UpdateUser{} // Interface para atualizar um usuário
 
-    // definindo id do usuario
+    // Definindo o ID do usuário
     @Id
-    @Column(name = "user_id", unique = true)   // definindo propriedades da coluna na tabela
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // autoincrement do id
+    @Column(name = "user_id", unique = true) // Define as propriedades da coluna na tabela
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Gera o ID automaticamente com autoincremento
     private Long id;
 
-    // definindo atributos do usuario
-    @Column(name = "user_name", length = 100, nullable = false, unique = true) // definindo propriedades da coluna na tabela
-    @NotNull(groups = CreateUser.class) // nao permite valor null ao criar o usuario
-    @NotEmpty(groups = CreateUser.class) // nao permite string vazia (" ") ao criar o usuario
-    @Size(groups = CreateUser.class, min = 3, max = 100) // tamanho minimo e maximo que o nome deve ter
+    // Definindo atributos do usuário
+    @Column(name = "user_name", length = 100, nullable = false, unique = true) // Define as propriedades da coluna na tabela
+    @NotNull(groups = CreateUser.class) // Não permite valor null ao criar o usuário
+    @NotEmpty(groups = CreateUser.class) // Não permite string vazia (" ") ao criar o usuário
+    @Size(groups = CreateUser.class, min = 3, max = 100) // Define o tamanho mínimo e máximo que o nome deve ter
     private String username;
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // quando retornar o json na api não vai retornar a senha para o front
-    @Column(name = "user_password", length = 60, nullable = false) // definindo propriedades da coluna na tabela
-    @NotNull(groups = {CreateUser.class, UpdateUser.class})  // nao permite valor null ao criar o usuario e alterar a senha
-    @NotEmpty(groups = {CreateUser.class, UpdateUser.class})  // nao permite string vazia (" ") ao criar o usuario e alterar a senha
-    @Size(groups = {CreateUser.class, UpdateUser.class}, min = 8, max = 60) // tamanho minimo e maximo que a senha deve ter ao criar o usuario e alterar a senha
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Quando retornar o JSON na API, não vai retornar a senha para o front
+    @Column(name = "user_password", length = 60, nullable = false) // Define as propriedades da coluna na tabela
+    @NotNull(groups = {CreateUser.class, UpdateUser.class})  // Não permite valor null ao criar o usuário e alterar a senha
+    @NotEmpty(groups = {CreateUser.class, UpdateUser.class})  // Não permite string vazia (" ") ao criar o usuário e alterar a senha
+    @Size(groups = {CreateUser.class, UpdateUser.class}, min = 8, max = 60) // Define o tamanho mínimo e máximo que a senha deve ter ao criar o usuário e alterar a senha
     private String password;
-    @OneToMany(mappedBy = "user") // definindo cardinalidade, um usuário pode ter várias tasks
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // quando retornar o json na api não vai retornar as tasks do usuário para o front
-    private List<Task> tasks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user") // Define a cardinalidade - um usuário pode ter várias tasks
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Quando retornar o JSON na API, não vai retornar as tasks do usuário para o front
+    private List<Task> tasks = new ArrayList<>(); // Lista de tarefas associadas ao usuário
+
+    @ElementCollection(fetch = FetchType.EAGER) // Define uma coleção de elementos que será carregada imediatamente
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Quando retornar o JSON na API, não vai retornar os perfis do usuário para o front
+    @CollectionTable(name = "table_profile") // Define o nome da tabela para armazenar os perfis do usuário
+    @Column(name = "user_profile", nullable = false) // Define as propriedades da coluna na tabela
+    private Set<Integer> profiles = new HashSet<>(); // Conjunto de perfis do usuário
+
+    public Set<ProfileEnum> getProfiles() { // Declaração do método getProfiles
+        return this.profiles.stream() // Inicia uma stream com os valores dos perfis
+                .map(x -> ProfileEnum.toEnum(x)) // Mapeia cada valor de perfil para uma instância de ProfileEnum usando o método estático toEnum
+                .collect(Collectors.toSet()); // Coleta os resultados em um conjunto e retorna
+    }
+
+    public void addProfile (ProfileEnum profileEnum) {
+        this.profiles.add(profileEnum.getCode());
+    }
 
     // implementação do construtor e getters e setters da maneira convencional
 
