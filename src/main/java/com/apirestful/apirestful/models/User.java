@@ -62,8 +62,8 @@ public class User {
                 .collect(Collectors.toSet()); // Coleta os resultados em um conjunto e retorna
     }
 
-    public void addProfile (ProfileEnum profileEnum) {
-        this.profiles.add(profileEnum.getCode());
+    public void addProfile(ProfileEnum profileEnum) {
+        this.profiles.add(profileEnum.getCode()); // Adiciona o código do perfil ao conjunto de perfis do usuário.
     }
 
     // implementação do construtor e getters e setters da maneira convencional
