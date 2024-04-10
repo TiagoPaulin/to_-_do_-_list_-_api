@@ -1,13 +1,18 @@
 package com.apirestful.apirestful.config;
 
+import com.apirestful.apirestful.Security.JWTUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -20,6 +25,12 @@ import java.util.Arrays;
 @EnableWebSecurity // Habilita a segurança web no aplicativo
 @EnableMethodSecurity(prePostEnabled = true) // Habilita a segurança de método com pré-autorização
 public class SecurityConfig {
+
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private UserDetailsService userDetailsService;
+    @Autowired
+    private JWTUtil jwtUtil;
 
     // Definição de URLs públicas que não exigem autenticação
     private static final String[] PUBLIC_MATCHERS ={
@@ -37,6 +48,13 @@ public class SecurityConfig {
         // Desabilita CSRF e CORS
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable);
+
+        AuthenticationManagerBuilder authenticationManagerBuilder = http
+                .getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(userDetailsService)
+                        .passwordEncoder(bCryptPasswordEncoder());
+
+        authenticationManager = authenticationManagerBuilder.build();
 
         // Configura as autorizações de acesso
         http.authorizeRequests()
