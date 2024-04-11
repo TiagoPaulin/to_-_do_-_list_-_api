@@ -56,7 +56,7 @@ public class JWTUtil {
         }
 
         return false;
-        
+
     }
 
     private Claims getClaims (String token) {
