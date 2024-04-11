@@ -1,6 +1,7 @@
 package com.apirestful.apirestful.config;
 
 import com.apirestful.apirestful.Security.JWTAuthenticationFilter;
+import com.apirestful.apirestful.Security.JWTAuthorizationFilter;
 import com.apirestful.apirestful.Security.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -66,6 +67,7 @@ public class SecurityConfig {
                 .authenticationManager(authenticationManager);
 
         http.addFilter(new JWTAuthenticationFilter(authenticationManager, jwtUtil));
+        http.addFilter(new JWTAuthorizationFilter(authenticationManager, jwtUtil, userDetailsService));
 
         // Configura o gerenciamento de sessão para STATELESS (sem estado)
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
