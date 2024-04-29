@@ -29,31 +29,31 @@ public class UserService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // metodo para encontrar o usuário pelo id
-    public User findById(Long id){
-
-        UserSpringSecurity userSpringSecurity = authenticated();
-
-        if (!Objects.nonNull(userSpringSecurity)
-                && !userSpringSecurity.hasRole(ProfileEnum.ADMIN) && !id.equals(userSpringSecurity.getId()))
-            throw new AuthorizationException("Acesso negado!");
-
-        Optional<User> user = ur.findById(id);
-
-        return user.orElseThrow(() -> new ObjectNotFoundException("Usuário não encontrado")); // se o optional conter um eser retorna o user, se nao lança uma exceção
-
-    }
-
-//    public User findById (Long id) {
+//    public User findById(Long id){
 //
 //        UserSpringSecurity userSpringSecurity = authenticated();
-//        if (!Objects.nonNull(userSpringSecurity) || !userSpringSecurity.hasRole(ProfileEnum.ADMIN)
-//        && !id.equals(userSpringSecurity.getId()))
-//            throw new AuthorizationException("acesso negado");
+//
+//        if (!Objects.nonNull(userSpringSecurity)
+//                && !userSpringSecurity.hasRole(ProfileEnum.ADMIN) && !id.equals(userSpringSecurity.getId()))
+//            throw new AuthorizationException("Acesso negado!");
 //
 //        Optional<User> user = ur.findById(id);
 //
 //        return user.orElseThrow(() -> new ObjectNotFoundException("Usuário não encontrado")); // se o optional conter um eser retorna o user, se nao lança uma exceção
+//
 //    }
+
+    public User findById (Long id) {
+
+        UserSpringSecurity userSpringSecurity = authenticated();
+        if (!Objects.nonNull(userSpringSecurity) || !userSpringSecurity.hasRole(ProfileEnum.ADMIN)
+        && !id.equals(userSpringSecurity.getId()))
+            throw new AuthorizationException("acesso negado");
+
+        Optional<User> user = ur.findById(id);
+
+        return user.orElseThrow(() -> new ObjectNotFoundException("Usuário não encontrado")); // se o optional conter um eser retorna o user, se nao lança uma exceção
+    }
 
     // metodo para criar o novo usuário
     @Transactional // usar para realizar insert e update no banco de dados, garante atomicidade

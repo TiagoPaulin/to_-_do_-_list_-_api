@@ -1,17 +1,19 @@
 package com.apirestful.apirestful.services;
 
+import com.apirestful.apirestful.Security.UserSpringSecurity;
 import com.apirestful.apirestful.models.Task;
 import com.apirestful.apirestful.models.User;
+import com.apirestful.apirestful.models.enums.ProfileEnum;
 import com.apirestful.apirestful.repositories.TaskRepository;
+import com.apirestful.apirestful.services.exceptions.AuthorizationException;
 import com.apirestful.apirestful.services.exceptions.DataBindingViolationException;
 import com.apirestful.apirestful.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @Service    // definindo como camda de serviço
 public class TaskService {
@@ -25,18 +27,34 @@ public class TaskService {
     private UserService us;
 
     // metodo para encontrar pelo id
-    public Task findById(Long id){
+//    public Task findById(Long id){
+//
+//        Optional<Task> task = tr.findById(id);
+//
+//        return task.orElseThrow(() -> new ObjectNotFoundException("Tarefa não encontrada"));
+//
+//    }
 
-        Optional<Task> task = tr.findById(id);
+    public Task findById(Long id) {
+        Task task = this.tr.findById(id).orElseThrow(() -> new ObjectNotFoundException("Tarefa não encontrada"));
 
-        return task.orElseThrow(() -> new ObjectNotFoundException("Tarefa não encontrada"));
+        UserSpringSecurity userSpringSecurity = UserService.authenticated();
 
+        if (Objects.isNull(userSpringSecurity) || !userSpringSecurity.hasRole(ProfileEnum.ADMIN)
+        && !userHasTask(userSpringSecurity, task)) throw new AuthorizationException("Acesso negado");
+
+        return task;
     }
 
     // metodo para retornar todas as tasks de um usuário
-    public List<Task> findAllByUserId (Long userId) {
+    public List<Task> findAllByUser() {
 
-        List<Task> tasks = this.tr.findByUser_Id(userId);
+        UserSpringSecurity userSpringSecurity = UserService.authenticated();
+
+        if (Objects.isNull(userSpringSecurity)) throw new AuthorizationException("Acesso negado");
+
+
+        List<Task> tasks = this.tr.findByUser_Id(userSpringSecurity.getId());
 
         return tasks;
 
@@ -46,7 +64,12 @@ public class TaskService {
     @Transactional
     public Task create(Task task){
 
-        User user = us.findById(task.getUser().getId()); // verifica se a task esta associada a um usuario
+        UserSpringSecurity userSpringSecurity = UserService.authenticated();
+
+        if (Objects.isNull(userSpringSecurity)) throw new AuthorizationException("Acesso negado");
+
+
+        User user = us.findById(userSpringSecurity.getId()); // verifica se a task esta associada a um usuario
 
         task.setId(null); // garante que o id seja gerado no medel, caso o usuári consiga de alguma forma criar o user com id
         task.setUser(user);
@@ -82,6 +105,10 @@ public class TaskService {
 
         }
 
+    }
+
+    private Boolean userHasTask(UserSpringSecurity userSpringSecurity, Task task) {
+        return task.getUser().getId().equals(userSpringSecurity.getId());
     }
 
 }

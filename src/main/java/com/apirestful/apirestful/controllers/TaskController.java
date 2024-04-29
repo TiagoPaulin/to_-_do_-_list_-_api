@@ -1,7 +1,6 @@
 package com.apirestful.apirestful.controllers;
 
 import com.apirestful.apirestful.models.Task;
-import com.apirestful.apirestful.models.User;
 import com.apirestful.apirestful.services.TaskService;
 import com.apirestful.apirestful.services.UserService;
 import jakarta.validation.Valid;
@@ -33,12 +32,22 @@ public class TaskController {
 
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Task>> findAllByUserId (@PathVariable Long userId) {
+//    @GetMapping("/user/{userId}")
+//    public ResponseEntity<List<Task>> findAllByUserId (@PathVariable Long userId) {
+//
+//        userService.findById(userId);
+//
+//        List<Task> tasks = taskService.findAllByUser(userId);
+//
+//        return ResponseEntity.ok().body(tasks);
+//
+//    }
 
-        userService.findById(userId);
+    @GetMapping("/user")
+    public ResponseEntity<List<Task>> findAllByUserId () {
 
-        List<Task> tasks = taskService.findAllByUserId(userId);
+
+        List<Task> tasks = taskService.findAllByUser();
 
         return ResponseEntity.ok().body(tasks);
 
