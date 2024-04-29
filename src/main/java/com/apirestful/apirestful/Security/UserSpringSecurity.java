@@ -59,6 +59,10 @@ public class UserSpringSecurity implements UserDetails { // Implementa a interfa
         return true; // Retorna se o usuário está habilitado.
     }
 
+    public boolean hasRole(ProfileEnum profileEnum) {
+        return getAuthorities().contains(new SimpleGrantedAuthority(profileEnum.getDescription()));
+    }
+
     public boolean hasProfile(ProfileEnum profileEnum) {
         // Verifica se as autoridades (perfis) do usuário contêm a autoridade associada ao perfil especificado.
         return getAuthorities().contains(new SimpleGrantedAuthority(profileEnum.getDescription()));

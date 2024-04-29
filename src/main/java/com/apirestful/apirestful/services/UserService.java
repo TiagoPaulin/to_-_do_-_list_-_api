@@ -1,16 +1,19 @@
 package com.apirestful.apirestful.services;
 
+import com.apirestful.apirestful.Security.UserSpringSecurity;
 import com.apirestful.apirestful.models.User;
 import com.apirestful.apirestful.models.enums.ProfileEnum;
-import com.apirestful.apirestful.repositories.TaskRepository;
 import com.apirestful.apirestful.repositories.UserRepository;
+import com.apirestful.apirestful.services.exceptions.AuthorizationException;
 import com.apirestful.apirestful.services.exceptions.DataBindingViolationException;
 import com.apirestful.apirestful.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,11 +31,29 @@ public class UserService {
     // metodo para encontrar o usuário pelo id
     public User findById(Long id){
 
+        UserSpringSecurity userSpringSecurity = authenticated();
+
+        if (!Objects.nonNull(userSpringSecurity)
+                && !userSpringSecurity.hasRole(ProfileEnum.ADMIN) && !id.equals(userSpringSecurity.getId()))
+            throw new AuthorizationException("Acesso negado!");
+
         Optional<User> user = ur.findById(id);
 
         return user.orElseThrow(() -> new ObjectNotFoundException("Usuário não encontrado")); // se o optional conter um eser retorna o user, se nao lança uma exceção
 
     }
+
+//    public User findById (Long id) {
+//
+//        UserSpringSecurity userSpringSecurity = authenticated();
+//        if (!Objects.nonNull(userSpringSecurity) || !userSpringSecurity.hasRole(ProfileEnum.ADMIN)
+//        && !id.equals(userSpringSecurity.getId()))
+//            throw new AuthorizationException("acesso negado");
+//
+//        Optional<User> user = ur.findById(id);
+//
+//        return user.orElseThrow(() -> new ObjectNotFoundException("Usuário não encontrado")); // se o optional conter um eser retorna o user, se nao lança uma exceção
+//    }
 
     // metodo para criar o novo usuário
     @Transactional // usar para realizar insert e update no banco de dados, garante atomicidade
@@ -79,6 +100,16 @@ public class UserService {
 
             throw new DataBindingViolationException("Não é possível excluir pois há entidades relacionadas");
 
+        }
+
+    }
+
+    public static UserSpringSecurity authenticated() {
+
+        try {
+            return (UserSpringSecurity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } catch (Exception e) {
+            return null;
         }
 
     }
