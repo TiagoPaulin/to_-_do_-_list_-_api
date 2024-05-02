@@ -2,11 +2,14 @@ package com.apirestful.apirestful.services;
 
 import com.apirestful.apirestful.Security.UserSpringSecurity;
 import com.apirestful.apirestful.models.User;
+import com.apirestful.apirestful.models.dto.UserCreateDTO;
+import com.apirestful.apirestful.models.dto.UserUpdateDTO;
 import com.apirestful.apirestful.models.enums.ProfileEnum;
 import com.apirestful.apirestful.repositories.UserRepository;
 import com.apirestful.apirestful.services.exceptions.AuthorizationException;
 import com.apirestful.apirestful.services.exceptions.DataBindingViolationException;
 import com.apirestful.apirestful.services.exceptions.ObjectNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,20 +32,6 @@ public class UserService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     // metodo para encontrar o usuário pelo id
-//    public User findById(Long id){
-//
-//        UserSpringSecurity userSpringSecurity = authenticated();
-//
-//        if (!Objects.nonNull(userSpringSecurity)
-//                && !userSpringSecurity.hasRole(ProfileEnum.ADMIN) && !id.equals(userSpringSecurity.getId()))
-//            throw new AuthorizationException("Acesso negado!");
-//
-//        Optional<User> user = ur.findById(id);
-//
-//        return user.orElseThrow(() -> new ObjectNotFoundException("Usuário não encontrado")); // se o optional conter um eser retorna o user, se nao lança uma exceção
-//
-//    }
-
     public User findById (Long id) {
 
         UserSpringSecurity userSpringSecurity = authenticated();
@@ -111,6 +100,26 @@ public class UserService {
         } catch (Exception e) {
             return null;
         }
+
+    }
+
+    public User fromDTO(@Valid UserCreateDTO obj) {
+
+        User user = new User();
+        user.setUsername(obj.getUsername());
+        user.setPassword(obj.getPassword());
+
+        return user;
+
+    }
+
+    public User fromDTO(@Valid UserUpdateDTO obj) {
+
+        User user = new User();
+        user.setId(obj.getId());
+        user.setPassword(obj.getPassword());
+
+        return user;
 
     }
 

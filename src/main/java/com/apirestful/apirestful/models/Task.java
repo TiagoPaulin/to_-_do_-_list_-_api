@@ -1,6 +1,7 @@
 package com.apirestful.apirestful.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,9 +14,7 @@ import java.util.Objects;
 @Table(name = "table_task") // definindo nome da tbabela no banco
 @AllArgsConstructor // implementando o construtor com os atributos com lombok
 @NoArgsConstructor // implementando o construtor vazio com lombok
-@Getter // metods getter com lombok
-@Setter // metodos setters com lombok
-@EqualsAndHashCode // metodos equals e hascode com lombok
+@Data // metodos getter, setter, equals e hashcode com lombok
 public class Task {
 
     // definindo id da task
@@ -29,8 +28,7 @@ public class Task {
     @JoinColumn(name = "user_id", nullable = false, updatable = false) // referencia o id do usuário na tabela de tasks
     private User user;
     @Column(name = "task_description", length = 255, nullable = false) // definindo propriedades da coluna na tabela
-    @NotNull // não permite valor nulo na descrição da tarefa
-    @NotEmpty // não permite String vazia na descrição da tarefa
+    @NotBlank // nao permite valor nulo nem String vazia na descri;'ao na tarefa (so serve pra string essa notacao)
     @Size(min = 1, max = 255) // tamanho minimo e maximo que a descrição deve ter
     private String description;
 

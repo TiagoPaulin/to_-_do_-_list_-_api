@@ -1,6 +1,7 @@
 package com.apirestful.apirestful.repositories;
 
 import com.apirestful.apirestful.models.Task;
+import com.apirestful.apirestful.models.projection.TaskProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +13,7 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
     // select pronto (tem que usar esse formato de nome
-    List<Task> findByUser_Id(Long id);
+    List<TaskProjection> findByUser_Id(Long id);
 
     // select utilizando query Jpql (não importa o nome do metodo)
 //    @Query(value = "SELECT t FROM Task t WHERE t.user.id = : user_id") // query seleciona todas as tasks baseadas no parametro passado no metodo que e o id do usuario

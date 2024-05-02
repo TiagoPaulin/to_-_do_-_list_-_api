@@ -4,6 +4,7 @@ import com.apirestful.apirestful.models.enums.ProfileEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -17,14 +18,8 @@ import java.util.stream.Collectors;
 @Table(name = "table_user") // Define o nome da tabela no banco de dados
 @AllArgsConstructor // Implementa um construtor com todos os atributos com lombok
 @NoArgsConstructor // Implementa um construtor vazio com lombok
-@Getter // Gera automaticamente os métodos getters com lombok
-@Setter // Gera automaticamente os métodos setters com lombok
-@EqualsAndHashCode // Gera automaticamente os métodos equals e hashCode com lombok
+@Data // metodos getter, setter, equals e hashcode com lombok
 public class User {
-
-    // Definindo interfaces
-    public interface CreateUser{} // Interface para criar um usuário
-    public interface UpdateUser{} // Interface para atualizar um usuário
 
     // Definindo o ID do usuário
     @Id
@@ -34,16 +29,14 @@ public class User {
 
     // Definindo atributos do usuário
     @Column(name = "user_name", length = 100, nullable = false, unique = true) // Define as propriedades da coluna na tabela
-    @NotNull(groups = CreateUser.class) // Não permite valor null ao criar o usuário
-    @NotEmpty(groups = CreateUser.class) // Não permite string vazia (" ") ao criar o usuário
-    @Size(groups = CreateUser.class, min = 3, max = 100) // Define o tamanho mínimo e máximo que o nome deve ter
+    @NotBlank // nao permite valor nulo nem String vazia na descri;'ao na tarefa (so serve pra string essa notacao)
+    @Size(min = 3, max = 100) // Define o tamanho mínimo e máximo que o nome deve ter
     private String username;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Quando retornar o JSON na API, não vai retornar a senha para o front
     @Column(name = "user_password", length = 60, nullable = false) // Define as propriedades da coluna na tabela
-    @NotNull(groups = {CreateUser.class, UpdateUser.class})  // Não permite valor null ao criar o usuário e alterar a senha
-    @NotEmpty(groups = {CreateUser.class, UpdateUser.class})  // Não permite string vazia (" ") ao criar o usuário e alterar a senha
-    @Size(groups = {CreateUser.class, UpdateUser.class}, min = 8, max = 60) // Define o tamanho mínimo e máximo que a senha deve ter ao criar o usuário e alterar a senha
+    @NotBlank // nao permite valor nulo nem String vazia na descri;'ao na tarefa (so serve pra string essa notacao)
+    @Size(min = 8, max = 60) // Define o tamanho mínimo e máximo que a senha deve ter ao criar o usuário e alterar a senha
     private String password;
 
     @OneToMany(mappedBy = "user") // Define a cardinalidade - um usuário pode ter várias tasks

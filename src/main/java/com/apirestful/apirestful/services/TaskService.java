@@ -4,6 +4,7 @@ import com.apirestful.apirestful.Security.UserSpringSecurity;
 import com.apirestful.apirestful.models.Task;
 import com.apirestful.apirestful.models.User;
 import com.apirestful.apirestful.models.enums.ProfileEnum;
+import com.apirestful.apirestful.models.projection.TaskProjection;
 import com.apirestful.apirestful.repositories.TaskRepository;
 import com.apirestful.apirestful.services.exceptions.AuthorizationException;
 import com.apirestful.apirestful.services.exceptions.DataBindingViolationException;
@@ -47,14 +48,14 @@ public class TaskService {
     }
 
     // metodo para retornar todas as tasks de um usuário
-    public List<Task> findAllByUser() {
+    public List<TaskProjection> findAllByUser() {
 
         UserSpringSecurity userSpringSecurity = UserService.authenticated();
 
         if (Objects.isNull(userSpringSecurity)) throw new AuthorizationException("Acesso negado");
 
 
-        List<Task> tasks = this.tr.findByUser_Id(userSpringSecurity.getId());
+        List<TaskProjection> tasks = this.tr.findByUser_Id(userSpringSecurity.getId());
 
         return tasks;
 

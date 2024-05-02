@@ -1,6 +1,8 @@
 package com.apirestful.apirestful.controllers;
 
 import com.apirestful.apirestful.models.User;
+import com.apirestful.apirestful.models.dto.UserCreateDTO;
+import com.apirestful.apirestful.models.dto.UserUpdateDTO;
 import com.apirestful.apirestful.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,21 +31,24 @@ public class UserController {
     }
 
     @PostMapping // requisição post  do usuário
-    @Validated(User.CreateUser.class) // valida a criaação do usuário baseada na interface criada no modelo
-    public ResponseEntity<Void> create(@Valid @RequestBody User user){
+    public ResponseEntity<Void> create(@Valid @RequestBody UserCreateDTO obj){
 
-        us.create(user);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
+        User user = us.fromDTO(obj);
+
+        User newUser = us.create(user);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newUser.getId()).toUri();
 
         return ResponseEntity.created(uri).build();
 
     }
 
     @PutMapping("/{id}") // requisiçãopu do usuário para fazer o update no banco
-    @Validated(User.UpdateUser.class)
-    public ResponseEntity<Void> update(@Valid @RequestBody User user, @PathVariable Long id){
+    public ResponseEntity<Void> update(@Valid @RequestBody UserUpdateDTO obj, @PathVariable Long id){
 
-        user.setId(id);
+        obj.setId(id);
+
+        User user = us.fromDTO(obj);
+
         us.update(user);
 
         return ResponseEntity.noContent().build();
