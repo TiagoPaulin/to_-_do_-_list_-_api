@@ -11,7 +11,10 @@ public class WebConfig implements WebMvcConfigurer { // Implementa a interface W
 
     // Método para adicionar configurações de CORS (Cross-Origin Resource Sharing)
     public void addCorsMappings(CorsRegistry registry){
-        registry.addMapping("/**"); // Define que todas as URLs terão configurações CORS aplicadas
+        registry.addMapping("/**") // Define que todas as URLs terão configurações CORS aplicadas
+                .allowedOrigins("*")
+                .allowedHeaders("*")
+                .allowedMethods("GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS");
     }
 
 }
