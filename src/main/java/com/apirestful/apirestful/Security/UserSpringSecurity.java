@@ -32,13 +32,6 @@ public class UserSpringSecurity implements UserDetails { // Implementa a interfa
                 .collect(Collectors.toList());
     }
 
-    // Implementações dos métodos da interface UserDetails
-
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return null; // Retorna as autoridades (perfis) do usuário.
-//    }
-
     @Override
     public boolean isAccountNonExpired() {
         return true; // Retorna se a conta do usuário não está expirada.
